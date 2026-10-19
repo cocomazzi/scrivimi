@@ -133,3 +133,4 @@ body[data-page="help"] #conversationsView{display:none!important}body[data-page=
 .app-header .help-icon.help-attention::after{content:"";position:absolute;inset:-3px;border:2px solid #946dc7;border-radius:50%;pointer-events:none;animation:help-guide-pulse 1s ease-out infinite}
 @keyframes help-guide-pulse{0%,15%{transform:scale(1);opacity:0}23%{opacity:.72}62%,100%{transform:scale(1.45);opacity:0}}
 @media(prefers-reduced-motion:reduce){.app-header .help-icon.help-attention::after{animation:none;opacity:0}}
+.guide-language{display:flex;justify-content:flex-end;align-items:center;gap:3px;margin-bottom:12px;color:#705d83}.guide-language button{font:inherit;font-size:12px;font-weight:700;min-width:44px;min-height:36px;border:1px solid #d5cbe2;border-radius:8px;background:#fff;color:#644199;cursor:pointer}.guide-language button[aria-pressed="true"]{background:#644199;color:#fff}.guide-language button:focus-visible{outline:3px solid #9473b7;outline-offset:3px}
