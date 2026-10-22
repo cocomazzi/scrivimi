@@ -4,28 +4,40 @@
   const ownerKey = 'scrivimi-data-owner-v1', metaPrefix = 'scrivimi-sync-v2-';
   const root = document.createElement('div');
   root.className = 'account-widget';
-  root.innerHTML = `<button id="syncToggle" type="button" aria-expanded="false" aria-controls="syncPanel">☁ Account <span id="syncBadge"></span></button>
-  <section id="syncPanel" hidden aria-label="Account Scrivimi">
-    <b>Scrivimi! · Account</b><p id="syncIdentity"></p><p id="syncState" role="status" aria-live="polite">Verifica accesso…</p>
+  root.innerHTML = `<button id="syncToggle" type="button" aria-expanded="false" aria-controls="syncPanel"><span id="syncToggleLabel">Accedi</span><span id="syncBadge" aria-hidden="true"></span></button>
+  <section id="syncPanel" hidden aria-labelledby="syncTitle">
+    <div class="account-heading"><h2 id="syncTitle">Accedi</h2><button id="syncClose" type="button" class="account-close" aria-label="Chiudi accesso">×</button></div>
+    <p id="syncIdentity" hidden></p><p id="syncState" role="status" aria-live="polite" hidden></p>
     <form id="syncForm"><label for="syncEmail">Email</label><input type="email" id="syncEmail" autocomplete="email" required>
     <label for="syncPassword">Password</label><input type="password" id="syncPassword" autocomplete="current-password">
-    <button id="syncLogin" type="submit">Accedi</button><button id="syncSignup" type="button">Crea account</button>
-    <button id="syncMagic" type="button">Accedi con un link email</button><button id="syncReset" type="button">Password dimenticata?</button><small>Hai già un account creato con un link? Accedi con il link, poi scegli «Imposta o cambia password».</small></form>
-    <form id="syncPasswordForm" hidden><label for="syncNewPassword">Nuova password (almeno 8 caratteri)</label><input type="password" id="syncNewPassword" minlength="8" required autocomplete="new-password"><label for="syncConfirmPassword">Ripeti la nuova password</label><input type="password" id="syncConfirmPassword" minlength="8" required autocomplete="new-password"><button type="submit">Imposta password</button></form>
+    <button id="syncLogin" class="account-primary" type="submit">Accedi</button>
+    <button id="syncReset" class="account-link account-forgot" type="button">Password dimenticata?</button>
+    <div class="account-divider"><span>oppure</span></div>
+    <button id="syncMagic" class="account-secondary" type="button">Ricevi un link di accesso</button>
+    <div class="account-signup"><span>Prima volta qui?</span><button id="syncSignup" class="account-link" type="button">Crea account</button></div></form>
+    <form id="syncPasswordForm" hidden><label for="syncNewPassword">Nuova password</label><input type="password" id="syncNewPassword" minlength="8" required autocomplete="new-password" placeholder="Almeno 8 caratteri"><label for="syncConfirmPassword">Conferma password</label><input type="password" id="syncConfirmPassword" minlength="8" required autocomplete="new-password"><button class="account-primary" type="submit">Salva password</button></form>
     <div id="syncConflict" hidden><p>La stessa risposta o il quaderno sono stati modificati in due copie. Scegli quale conservare; prima salveremo una copia di sicurezza di entrambe.</p><button id="syncUseRemote" type="button">Usa la copia online</button><button id="syncUseLocal" type="button">Usa la copia di questo dispositivo</button></div>
-    <p><button id="syncRetry" type="button" hidden>Sincronizza ora</button><button id="syncSetPassword" type="button" hidden>Imposta o cambia password</button><button id="syncLogout" type="button" hidden>Esci da questo dispositivo</button><button id="syncExport" type="button">Scarica copia di sicurezza</button></p>
-    <small>Risposte e quaderno si salvano automaticamente online quando hai effettuato l’accesso. Senza connessione restano sul dispositivo e verranno sincronizzati al ritorno online. Scarica separatamente le registrazioni audio.</small>
+    <div class="account-actions" hidden><button id="syncRetry" class="account-secondary" type="button" hidden>Sincronizza ora</button><button id="syncSetPassword" class="account-link" type="button" hidden>Imposta o cambia password</button><button id="syncExport" class="account-link" type="button">Scarica backup</button><button id="syncLogout" class="account-logout" type="button" hidden>Esci</button></div>
   </section>`;
-  document.body.append(root);
+  (document.querySelector('.app-header .app-top') || document.body).append(root);
   const el = id => root.querySelector('#' + id);
   let api, user = null, epoch = 0, running = false, queued = false, timer, authBusy = false, stopping = false, blocked = false;
   let recovery = new URLSearchParams(location.hash.slice(1)).get('type') === 'recovery';
   const snapshot = () => Object.fromEntries(keys.map(k => [k, localStorage.getItem(k)]).filter(([, v]) => v !== null));
   let observed = snapshot();
   const redirectTo = () => new URL('index.html', location.href).href.split(/[?#]/)[0];
-  function status(message, badge = '') { el('syncState').textContent = message; el('syncBadge').textContent = badge; }
+  function status(message, badge = '') {
+    el('syncState').textContent = message; el('syncState').hidden = !message;
+    el('syncState').classList.toggle('account-status-warning', badge === '⚠');
+    el('syncBadge').textContent = badge; el('syncBadge').hidden = !badge;
+    el('syncToggle').title = user ? message : 'Accedi';
+  }
   function openPanel() { el('syncPanel').hidden = false; el('syncToggle').setAttribute('aria-expanded', 'true'); }
   el('syncToggle').onclick = () => { el('syncPanel').hidden = !el('syncPanel').hidden; el('syncToggle').setAttribute('aria-expanded', String(!el('syncPanel').hidden)); };
+  function closePanel() { el('syncPanel').hidden = true; el('syncToggle').setAttribute('aria-expanded', 'false'); }
+  el('syncClose').onclick = () => { closePanel(); el('syncToggle').focus(); };
+  document.addEventListener('pointerdown', event => { if (!root.contains(event.target)) closePanel(); });
+  document.addEventListener('keydown', event => { if (event.key === 'Escape' && !el('syncPanel').hidden) { closePanel(); el('syncToggle').focus(); } });
   function backup(payload = snapshot(), remote) {
     if (Object.keys(payload).length || remote) localStorage.setItem('scrivimi-backup-' + Date.now() + '-' + Math.random().toString(36).slice(2), JSON.stringify({owner: user?.id || localStorage.getItem(ownerKey), payload, ...(remote ? {remote} : {})}));
   }
@@ -34,8 +46,12 @@
   const current = (id, ticket) => user?.id === id && epoch === ticket && localStorage.getItem(ownerKey) === id;
   function show() {
     el('syncForm').hidden = !!user;
+    root.querySelector('.account-actions').hidden = !user;
+    el('syncTitle').textContent = user ? 'Il tuo account' : 'Accedi';
+    el('syncToggleLabel').textContent = user ? 'Account' : 'Accedi';
     ['syncRetry', 'syncSetPassword', 'syncLogout'].forEach(id => { el(id).hidden = !user; });
-    el('syncIdentity').textContent = user ? 'Accesso: ' + (user.email || 'studente') : '';
+    el('syncIdentity').textContent = user ? (user.email || 'Studente') : '';
+    el('syncIdentity').hidden = !user;
     el('syncPasswordForm').hidden = !user || !recovery;
   }
   function refresh() { observed = snapshot(); window.dispatchEvent(new Event('scrivimi:data-restored')); }
@@ -52,7 +68,7 @@
   }
   function schedule(delay = 900) {
     if (!user || stopping) return;
-    if (!blocked) status('Modifiche sul dispositivo. Salvataggio online in attesa…', '…');
+    if (!blocked) status('Salvataggio…', '…');
     clearTimeout(timer); timer = setTimeout(() => synchronize(), delay);
   }
   async function synchronize(choice) {
@@ -96,7 +112,7 @@
         localStorage.setItem(metaKey(id), JSON.stringify({base: merged}));
         observed = snapshot(); blocked = false; el('syncConflict').hidden = true;
         if (!equal(decode(observed), decode(merged))) { queued = true; status('Salvataggio delle ultime modifiche…', '…'); }
-        else { status('✓ Tutte le modifiche sono salvate online.', '✓'); success = true; }
+        else { status('Tutto salvato online.', '✓'); success = true; }
         return;
       }
       throw new Error('concurrent-write');
@@ -105,7 +121,7 @@
       if (navigator.locks) await navigator.locks.request('scrivimi-cloud-sync', work);
       else await work();
     } catch {
-      if (current(id, ticket)) status('Salvato sul dispositivo. Sincronizzazione online non riuscita: riproveremo automaticamente. Controlla la connessione.', '⚠');
+      if (current(id, ticket)) status('Sincronizzazione non riuscita. I dati restano qui: riproviamo automaticamente.', '⚠');
     } finally {
       running = false;
       if (queued) { queued = false; if (user && !blocked) schedule(500); }
@@ -125,7 +141,7 @@
     if (nextId) stopping = false;
     if (nextId && !previous) localStorage.removeItem(metaKey(nextId));
     if (nextId) { localStorage.setItem(ownerKey, nextId); show(); schedule(0); }
-    else { show(); status('Accedi per ritrovare automaticamente risposte e quaderno su tutti i dispositivi.'); }
+    else { show(); status(''); }
   }
   async function authAction(action) {
     if (authBusy) return;
@@ -175,7 +191,7 @@
       if (password !== el('syncConfirmPassword').value) return status('Le due password non coincidono.');
       const {error} = await api.auth.updateUser({password});
       if (error) throw error;
-      el('syncNewPassword').value = ''; el('syncConfirmPassword').value = ''; recovery = false; show(); status('Password impostata. Puoi accedere con email e password anche dagli altri dispositivi.');
+      el('syncNewPassword').value = ''; el('syncConfirmPassword').value = ''; recovery = false; show(); status('Password impostata.');
     });
   };
   el('syncRetry').onclick = () => synchronize();

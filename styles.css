@@ -135,14 +135,50 @@ body[data-page="help"] #conversationsView{display:none!important}body[data-page=
 @media(prefers-reduced-motion:reduce){.app-header .help-icon.help-attention::after{animation:none;opacity:0}}
 .guide-language{display:flex;justify-content:flex-end;align-items:center;gap:3px;margin-bottom:12px;color:#705d83}.guide-language button{font:inherit;font-size:12px;font-weight:700;min-width:44px;min-height:36px;border:1px solid #d5cbe2;border-radius:8px;background:#fff;color:#644199;cursor:pointer}.guide-language button[aria-pressed="true"]{background:#644199;color:#fff}.guide-language button:focus-visible{outline:3px solid #9473b7;outline-offset:3px}
 
-/* Account and cloud status stay accessible above mobile navigation. */
-.account-widget{position:fixed;bottom:80px;right:16px;z-index:10000;font:14px Arial,sans-serif;max-width:calc(100vw - 32px)}
-.account-widget section{background:#fff;color:#30253b;padding:18px;border:1px solid #ddd;border-radius:16px;box-shadow:0 4px 20px #0002;width:320px;max-width:calc(100vw - 32px);max-height:calc(100dvh - 160px);overflow:auto;box-sizing:border-box}
-.account-widget button{background:#e9e1f6;color:#443353;border:0;border-radius:20px;padding:9px 13px;cursor:pointer;margin:3px}
+/* Account: a clear header action and a compact dropdown. */
+.account-widget{position:relative;flex:0 0 auto;font:inherit;z-index:110}
+.account-widget button{font:inherit;cursor:pointer;transition:background .16s,color .16s,box-shadow .16s}
+#syncToggle{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:42px;padding:10px 22px;border:1px solid #51328a;border-radius:12px;background:#5e389b;color:#fff;font-size:14px;font-weight:750;box-shadow:0 3px 9px #51328a25;white-space:nowrap}
+#syncToggle:hover,#syncToggle[aria-expanded="true"]{background:#492778;border-color:#492778;box-shadow:0 4px 14px #51328a35}
+#syncPanel{position:absolute;top:calc(100% + 14px);right:0;width:340px;max-width:calc(100vw - 24px);max-height:calc(100dvh - 100px);overflow:auto;box-sizing:border-box;padding:24px;border:1px solid #e6deec;border-radius:20px;background:#fff;color:#30273d;box-shadow:0 18px 55px #2e164b26,0 2px 8px #2e164b0a;text-align:left}
+.account-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}
+.account-heading h2{margin:0;font-size:21px;line-height:1.25;letter-spacing:-.5px;font-weight:750}
+.account-widget .account-close{display:grid;place-items:center;width:30px;height:30px;padding:0;border:0;border-radius:50%;background:#f5f1f8;color:#766580;font-size:23px;line-height:1}
+.account-widget .account-close:hover{background:#e9e0f0;color:#482a67}
+.account-widget label{display:block;margin:15px 0 7px;font-size:12px;font-weight:700;color:#60526d}
+.account-widget input{display:block;width:100%;box-sizing:border-box;min-height:44px;padding:10px 12px;border:1px solid #dcd3e5;border-radius:10px;background:#fcfafd;color:#30273d;font:inherit;font-size:14px;box-shadow:0 1px 2px #24143305}
+.account-widget input::placeholder{color:#988da1;font-size:12px}
+.account-widget .account-primary{display:block;width:100%;min-height:44px;margin-top:18px;padding:11px 16px;border:1px solid #5e389b;border-radius:10px;background:#5e389b;color:#fff;font-weight:750;font-size:14px}
+.account-widget .account-primary:hover{background:#492778;border-color:#492778}
+.account-widget .account-secondary{display:block;width:100%;min-height:44px;padding:10px 14px;border:1px solid #d6c8e5;border-radius:10px;background:#f7f3fc;color:#5c3887;font-size:13px;font-weight:650}
+.account-widget .account-secondary:hover{background:#eee5f8;border-color:#b59cce}
+.account-widget .account-link{padding:5px 0;border:0;background:transparent;color:#6a4793;font-size:12px;font-weight:650;text-align:left;text-decoration-thickness:1px;text-underline-offset:3px}
+.account-widget .account-link:hover{text-decoration:underline;color:#432465}
+.account-widget .account-forgot{display:block;margin:9px 0 0 auto}
+.account-divider{display:flex;align-items:center;gap:12px;margin:17px 0;color:#9b8da6;font-size:11px}
+.account-divider::before,.account-divider::after{content:"";height:1px;background:#eee8f2;flex:1}
+.account-signup{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:7px;margin-top:18px;font-size:12px;color:#8b7d98}
+.account-signup .account-link{font-size:12px}
+.account-actions{display:grid;gap:10px;margin-top:18px;padding-top:18px;border-top:1px solid #eee8f2}
+.account-widget .account-logout{justify-self:start;margin-top:4px;padding:8px 16px;border:1px solid #ecd9dc;border-radius:9px;background:#fff8f8;color:#9a4353;font-size:12px;font-weight:650}
+.account-widget .account-logout:hover{background:#fbecef;border-color:#dbb5bf}
+#syncIdentity{margin:0 0 14px;font-size:13px;color:#796887;overflow-wrap:anywhere}
+#syncState{margin:0 0 15px;padding:10px 12px;border-radius:10px;background:#f2f7f3;color:#496851;font-size:12px;line-height:1.5}
+#syncState.account-status-warning{background:#fff5e9;color:#8c5b22}
+#syncConflict{padding:14px;border:1px solid #ebd5af;border-radius:12px;background:#fffaf2;font-size:12px;line-height:1.6}
+#syncConflict button{display:block;width:100%;margin-top:8px;padding:10px;border:1px solid #d6c8e5;border-radius:9px;background:#fff;color:#5c3887;font-size:12px;font-weight:650}
+#syncConflict #syncUseRemote{background:#5e389b;border-color:#5e389b;color:#fff}
+#syncBadge{display:inline-block;font-size:11px;line-height:1}
 .account-widget button:disabled{opacity:.55;cursor:wait}
-.account-widget label{display:block;margin:9px 0 4px}
-.account-widget input{display:block;width:100%;box-sizing:border-box;padding:9px;border:1px solid #bbb;border-radius:8px;font:inherit}
-.account-widget small{line-height:1.5;display:block}
 .account-widget [hidden]{display:none!important}
-.account-widget :focus-visible{outline:3px solid #7053a0;outline-offset:2px}
-#syncBadge{font-weight:bold}
+.account-widget :focus-visible{outline:3px solid #b79bd7;outline-offset:3px}
+@media(max-width:680px){
+ .app-header .app-top{display:grid;grid-template-columns:1fr auto;grid-template-areas:"brand account" "timer tools";gap:8px 12px;padding:10px 14px}
+ .app-header .brand{grid-area:brand}.app-header .brand small{font-size:10px}.app-header .brand strong{font-size:19px}
+ .app-header .header-timer{grid-area:timer;justify-self:start;margin-left:0}
+ .app-header .nav-tools{grid-area:tools;justify-self:end;gap:5px}
+ .account-widget{grid-area:account;justify-self:end;position:static}
+ #syncToggle{min-height:39px;padding:9px 18px;font-size:13px}
+ #syncPanel{top:58px;right:12px;width:340px;max-height:calc(100dvh - 76px);padding:22px;z-index:120}
+}
+@media(prefers-reduced-motion:reduce){.account-widget button{transition:none}}

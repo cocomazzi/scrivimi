@@ -76,7 +76,7 @@ try {
     await page.locator('#startModalSkip').click();
     return {context,page,errors};
   }
-  async function saved(page) { await page.waitForFunction(()=>document.querySelector('#syncState').textContent.includes('Tutte le modifiche'),{},{timeout:20000}); }
+  async function saved(page) { await page.waitForFunction(()=>document.querySelector('#syncState').textContent.includes('Tutto salvato'),{},{timeout:20000}); }
   const a = await device();
   await saved(a.page);
   assert.equal(await a.page.locator('[data-answer="0"]').inputValue(),'risposta originale');
@@ -102,7 +102,7 @@ try {
   // Changes typed during a delayed request must be saved as well.
   lag = 180;
   await b.page.locator('[data-answer="3"]').fill('prima battuta');
-  await b.page.waitForFunction(()=>document.querySelector('#syncState').textContent.includes('attesa'));
+  await b.page.waitForFunction(()=>document.querySelector('#syncState').textContent.includes('Salvataggio'));
   await pause(1000);
   await b.page.locator('[data-answer="3"]').fill('testo finale durante richiesta');
   lag = 0; await saved(b.page);
