@@ -14,12 +14,12 @@ Applicazione gratuita per praticare l'italiano in conversazioni con la famiglia 
 Apri `index.html` in un browser oppure visita il sito GitHub Pages una volta attivato.
 
 ## Privacy e dati
-Le risposte e il quaderno sono conservati localmente nel browser (localStorage). Non esistono account né sincronizzazione automatica. Salva periodicamente una copia dei dati. Le registrazioni audio vanno scaricate per conservarle.
+Le risposte e il quaderno sono conservati localmente nel browser (localStorage). È disponibile un account con email e password (o link email), con caricamento e salvataggio cloud automatici di risposte e quaderno. Senza connessione le modifiche restano sul dispositivo e vengono ritentate al ritorno online. Il timer resta locale. Vedi [autenticazione e configurazione Supabase](AUTHENTICATION.md). Salva periodicamente una copia dei dati. Le registrazioni audio vanno scaricate per conservarle.
 
 ## Fotografie
 La pagina utilizza fotografie ospitate da Wikimedia Commons. Per attribuzioni e licenze, usa il link «Fonte e licenza» mostrato per ogni fotografia. Per un futuro funzionamento offline puoi aggiungere copie autorizzate nella cartella `images/` (nomi `01.webp`, `02.webp`, ecc.).
 
 ## Pubblicazione su GitHub Pages
-In **Settings → Pages → Build and deployment**, scegli **Deploy from a branch**, branch **main**, cartella **/(root)**, poi **Save**. Il sito sarà disponibile a `https://cocomazzi.github.io/parliamo/` quando il deployment sarà completato.
+In **Settings → Pages → Build and deployment**, scegli **Deploy from a branch**, branch **main**, cartella **/(root)**, poi **Save**. Il sito sarà disponibile a `https://cocomazzi.github.io/scrivimi/` quando il deployment sarà completato.
 
 Il servizio è attualmente gratuito.

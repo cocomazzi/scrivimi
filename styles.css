@@ -134,3 +134,15 @@ body[data-page="help"] #conversationsView{display:none!important}body[data-page=
 @keyframes help-guide-pulse{0%,15%{transform:scale(1);opacity:0}23%{opacity:.72}62%,100%{transform:scale(1.45);opacity:0}}
 @media(prefers-reduced-motion:reduce){.app-header .help-icon.help-attention::after{animation:none;opacity:0}}
 .guide-language{display:flex;justify-content:flex-end;align-items:center;gap:3px;margin-bottom:12px;color:#705d83}.guide-language button{font:inherit;font-size:12px;font-weight:700;min-width:44px;min-height:36px;border:1px solid #d5cbe2;border-radius:8px;background:#fff;color:#644199;cursor:pointer}.guide-language button[aria-pressed="true"]{background:#644199;color:#fff}.guide-language button:focus-visible{outline:3px solid #9473b7;outline-offset:3px}
+
+/* Account and cloud status stay accessible above mobile navigation. */
+.account-widget{position:fixed;bottom:80px;right:16px;z-index:10000;font:14px Arial,sans-serif;max-width:calc(100vw - 32px)}
+.account-widget section{background:#fff;color:#30253b;padding:18px;border:1px solid #ddd;border-radius:16px;box-shadow:0 4px 20px #0002;width:320px;max-width:calc(100vw - 32px);max-height:calc(100dvh - 160px);overflow:auto;box-sizing:border-box}
+.account-widget button{background:#e9e1f6;color:#443353;border:0;border-radius:20px;padding:9px 13px;cursor:pointer;margin:3px}
+.account-widget button:disabled{opacity:.55;cursor:wait}
+.account-widget label{display:block;margin:9px 0 4px}
+.account-widget input{display:block;width:100%;box-sizing:border-box;padding:9px;border:1px solid #bbb;border-radius:8px;font:inherit}
+.account-widget small{line-height:1.5;display:block}
+.account-widget [hidden]{display:none!important}
+.account-widget :focus-visible{outline:3px solid #7053a0;outline-offset:2px}
+#syncBadge{font-weight:bold}
